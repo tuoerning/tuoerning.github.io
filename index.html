@@ -20,7 +20,10 @@
 </audio>
 <script>
     var audios = document. getElementById("audios");
-    audios.play();
+
+    document.addEventListener("click",function () {
+        audios.play();
+    });
     document.addEventListener("touchstart",function () {
         audios.play();
     });
