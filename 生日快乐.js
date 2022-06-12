@@ -10,6 +10,7 @@ var S = {
             S.UI.simulate(decodeURI(action).substring(i + 3));
         } else {
             S.UI.simulate('|#countdown 3||祝|潇潇|生日|快乐|');
+
         }
 
         S.Drawing.loop(function () {
@@ -17,7 +18,6 @@ var S = {
         });
     }
 };
-
 
 S.Drawing = (function () {
     var canvas,
